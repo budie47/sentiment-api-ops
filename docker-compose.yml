@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # Container 1: The MLflow Dashboard
+  mlflow:
+    image: python:3.11-slim
+    container_name: mlflow-server
+    # Install mlflow and start the server and add --allowed-hosts '*' to bypass the strict DNS security
+    command: /bin/bash -c "pip install mlflow && mlflow server --host 0.0.0.0 --port 5000 --allowed-hosts '*'"
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/mlruns # Save the data to your Kubuntu machine so it isn't lost if the container dies
+
+  # Container 2: Your AI API
+  api:
+    image: sentiment-api:v1
+    container_name: ai-engine
+    ports:
+      - "8000:8000"
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+    depends_on:
+      - mlflow # Tell Docker to start MLflow BEFORE starting the API
