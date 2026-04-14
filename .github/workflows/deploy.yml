@@ -25,7 +25,7 @@ jobs:
       - name: Deploy Application Stack
         run: |
           docker-compose down
-          sdocker-compose up -d --build
+          docker-compose up -d --build
 
       # Step D: Cleanup unused Docker images to save Proxmox hard drive space
       - name: Clean up unused data
