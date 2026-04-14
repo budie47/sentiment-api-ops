@@ -1,0 +1,32 @@
+name: Production Deployment Pipeline
+
+# 1. When should this run? Every time you push to the 'main' branch.
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    # 2. Where should this run? On your Proxmox server!
+    runs-on: self-hosted
+
+    steps:
+      # Step A: Download the latest code from GitHub to the Proxmox server
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step B: Securely create the .env file using your GitHub Secret
+      - name: Inject Secrets
+        run: |
+          echo "HF_TOKEN=${{ secrets.HF_TOKEN }}" > .env
+
+      # Step C: Tear down the old containers and launch the new ones
+      - name: Deploy Application Stack
+        run: |
+          docker compose down
+          docker compose up -d --build
+
+      # Step D: Cleanup unused Docker images to save Proxmox hard drive space
+      - name: Clean up unused data
+        run: docker system prune -f
