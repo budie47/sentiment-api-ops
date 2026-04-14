@@ -24,8 +24,8 @@ jobs:
       # Step C: Tear down the old containers and launch the new ones
       - name: Deploy Application Stack
         run: |
-          docker compose down
-          docker compose up -d --build
+          docker-compose down
+          docker-compose up -d --build
 
       # Step D: Cleanup unused Docker images to save Proxmox hard drive space
       - name: Clean up unused data
